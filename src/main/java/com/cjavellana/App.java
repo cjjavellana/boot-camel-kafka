@@ -11,7 +11,6 @@ import org.springframework.jms.annotation.EnableJms;
 
 @ComponentScan(basePackages = "com.cjavellana")
 @EnableAutoConfiguration
-@EnableJms
 @Configuration
 @SpringBootApplication
 public class App {

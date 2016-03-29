@@ -11,8 +11,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:app-config.properties")
 public class JmsConfigurations {
 
-    //@Value("activemq.url")
-    private String activeMQUrl = "tcp://192.168.1.101:61616";
+    @Value("#{ environment['activemq.url'] }")
+    private String activeMQUrl;
 
     @Bean
     public JmsComponent jms() {
