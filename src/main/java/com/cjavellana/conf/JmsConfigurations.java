@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:app-config.properties")
 public class JmsConfigurations {
 
-    @Value("#{ environment['activemq.url'] }")
+    @Value("${activemq.url}")
     private String activeMQUrl;
 
     @Bean

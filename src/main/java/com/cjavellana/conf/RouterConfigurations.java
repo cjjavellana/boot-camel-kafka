@@ -23,22 +23,6 @@ public class RouterConfigurations {
     private EmployeeService employeeService;
 
     @Bean
-    public KafkaEndpoint kafkaEndpoint() {
-        KafkaEndpoint kafkaEndpoint = new KafkaEndpoint();
-        kafkaEndpoint.setZookeeperHost("localhost");
-        kafkaEndpoint.setZookeeperPort(2181);
-        kafkaEndpoint.setTopic("test");
-        return kafkaEndpoint;
-    }
-
-    @Bean
-    public KafkaComponent kafkaComponent(KafkaEndpoint kafkaEndpoint) {
-        KafkaComponent kafkaComponent = new KafkaComponent();
-        kafkaComponent.setEndpointClass(kafkaEndpoint.getClass());
-        return kafkaComponent;
-    }
-
-    @Bean
     public RouteBuilder entityReadyRouteBuilder() {
         return new RouteBuilder() {
             @Override
@@ -55,7 +39,7 @@ public class RouterConfigurations {
                                 oos.writeObject(employees);
                                 oos.close();
 
-                                exchange.getIn().setBody("Hello");
+                                exchange.getIn().setBody("${body}");
                                 exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY, 0);
                                 exchange.getIn().setHeader(KafkaConstants.KEY, "1");
 
