@@ -1,20 +1,15 @@
 package com.cjavellana.conf;
 
-import com.cjavellana.model.Employee;
+import com.cjavellana.adapters.DataStreamingAdapter;
+import com.cjavellana.model.AvailableEntity;
 import com.cjavellana.service.EmployeeService;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
+import com.cjavellana.typeconverters.TypeConverters;
+import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.kafka.KafkaComponent;
-import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.component.kafka.KafkaEndpoint;
+import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.ObjectOutputStream;
-import java.util.List;
 
 @Configuration
 public class RouterConfigurations {
@@ -23,32 +18,38 @@ public class RouterConfigurations {
     private EmployeeService employeeService;
 
     @Bean
+    public CamelContextConfiguration contextConfiguration() {
+        TypeConverters typeConverters = new TypeConverters();
+
+        return new CamelContextConfiguration() {
+            @Override
+            public void beforeApplicationStart(CamelContext context) {
+                context.getTypeConverterRegistry().addTypeConverters(typeConverters);
+            }
+        };
+    }
+
+    @Bean
     public RouteBuilder entityReadyRouteBuilder() {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
                 from("jms:entityReady")
-                        .log("${body}")
-                        .process(new Processor() {
-                            @Override
-                            public void process(Exchange exchange) throws Exception {
-                                List<Employee> employees = employeeService.findAll();
-
-                                ByteOutputStream bos = new ByteOutputStream();
-                                ObjectOutputStream oos = new ObjectOutputStream(bos);
-                                oos.writeObject(employees);
-                                oos.close();
-
-                                exchange.getIn().setBody("${body}");
-                                exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY, 0);
-                                exchange.getIn().setHeader(KafkaConstants.KEY, "1");
-
-                                bos.close();
-                            }
-                        })
-                        .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
+                        .convertBodyTo(AvailableEntity.class)
+                        .bean(DataStreamingAdapter.class, "stream");
             }
         };
     }
 
+    @Bean(name = "kafkaRouteProducer")
+    public RouteBuilder kafkaProducerRoute() {
+        return new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                from("direct:kafkaRoute")
+                        .convertBodyTo(byte[].class)
+                        .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1&serializerClass=com.cjavellana.serialization.ListEncoder");
+            }
+        };
+    }
 }
