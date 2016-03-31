@@ -9,17 +9,16 @@ A spring boot application which uses camel for routing inbound messages and for 
 5. Maven 3.x
 
 ## Quick Start
-1. Clone the project
-```
-git clone git@github.com:cjjavellana/boot-camel-kafka.git
-```
-
+1. Clone the project  
+    ```
+    git clone git@github.com:cjjavellana/boot-camel-kafka.git
+    ```
 2. Download project dependency
 
-Navigate to the project folder and execute
-```
-$ mvn clean package
-```
+    * Navigate to the project folder and execute  
+      ```
+      $ mvn clean package
+      ```
 
 ## TODO
 1. Dockerize this project
