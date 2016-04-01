@@ -47,8 +47,7 @@ public class RouterConfigurations {
             @Override
             public void configure() throws Exception {
                 from("direct:kafkaRoute")
-                        .convertBodyTo(byte[].class)
-                        .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1");
+                        .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
             }
         };
     }

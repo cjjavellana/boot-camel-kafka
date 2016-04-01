@@ -1,6 +1,8 @@
 package com.cjavellana.model;
 
 
+import com.cjavellana.constants.Constants;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -55,5 +57,13 @@ public class Employee implements Serializable {
 
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public String toCSV() {
+        return String.format("%s,%s,%s,%s",
+                (userid == null) ? "" : userid,
+                (name == null) ? "" : name,
+                (lastName == null) ? "" : lastName,
+                (birthdate == null) ? "" : Constants.DATE_FORMAT.format(birthdate));
     }
 }
