@@ -41,13 +41,25 @@ public class RouterConfigurations {
         };
     }
 
+    @Bean
+    public RouteBuilder inboundRoute() {
+        return new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                from("kafka:localvm:9092?topic=inbound&zookeeperHost=localvm&zookeeperPort=2181&groupId=group1&zookeeperSessionTimeoutMs=90000&zookeeperConnectionTimeoutMs=90000")
+                        .convertBodyTo(AvailableEntity.class)
+                        .bean(DataStreamingAdapter.class, "stream");
+            }
+        };
+    }
+
     @Bean(name = "kafkaRouteProducer")
     public RouteBuilder kafkaProducerRoute() {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
                 from("direct:kafkaRoute")
-                        .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
+                        .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localvm&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
             }
         };
     }
