@@ -14,7 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class DataStreamingAdapter {
@@ -25,7 +28,7 @@ public class DataStreamingAdapter {
     private EmployeeService employeeService;
 
     @EndpointInject(uri = "direct:kafkaRoute")
-    ProducerTemplate kafkaProducer;
+    private ProducerTemplate kafkaProducer;
 
     public void stream(Exchange exchange, AvailableEntity availableEntity) {
         LOGGER.info("Message Received: {} {} {}",
@@ -53,9 +56,11 @@ public class DataStreamingAdapter {
                 });
             }
 
-            exchange.getIn().setBody(csvBuffer.toString(), String.class);
-            kafkaProducer.send(exchange);
+            //exchange.getIn().setBody(csvBuffer.toString(), String.class);
+            //kafkaProducer.send(exchange);
 
+            LOGGER.info("Sending {} to {} Topic", csvBuffer.toString(), availableEntity.getTable());
+            kafkaProducer.sendBody("direct:kafka" + availableEntity.getTable() + "Route", csvBuffer.toString());
 
             pageNo++;
             p = new PageRequest(pageNo, Constants.PAGE_SIZE);

@@ -42,6 +42,8 @@ public class MySqlJpaConfiguration extends CommonJpaConfigurations {
             dataSource.setTestConnectionOnCheckout(true);
             dataSource.setPreferredTestQuery(getDatabaseValidationQuery());
             dataSource.setIdleConnectionTestPeriod(1800000);
+            dataSource.setMinPoolSize(10);
+            dataSource.setMaxPoolSize(30);
             return dataSource;
         } catch (PropertyVetoException pve) {
             throw new RuntimeException("Unable to create oracle datasource", pve);

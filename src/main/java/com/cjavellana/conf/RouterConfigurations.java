@@ -60,6 +60,12 @@ public class RouterConfigurations {
             public void configure() throws Exception {
                 from("direct:kafkaRoute")
                         .to("kafka:192.168.1.101:9092?topic=test&zookeeperHost=localvm&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
+
+                from("direct:kafkaEmployeesRoute")
+                        .to("kafka:192.168.1.101:9092?topic=employeeSourceDataTopic&zookeeperHost=localvm&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
+
+                from("direct:kafkaStreamingCompleteRoute")
+                        .to("kafka:192.168.1.101:9092?topic=SourcingCompleteTopic&zookeeperHost=localvm&zookeeperPort=2181&groupId=group1&serializerClass=kafka.serializer.StringEncoder");
             }
         };
     }
