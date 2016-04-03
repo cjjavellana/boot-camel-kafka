@@ -42,33 +42,35 @@ The expected message format is as follows:
     
 Flume Configuration
 -------------------
-> a1.sources = kafka-source-1
-> a1.channels = hdfs-channel-1
-> a1.sinks = hdfs-sink-1
-> 
-> \# For each one of the sources, the type is defined
-> a1.sources.kafka-source-1.type = org.apache.flume.source.kafka.KafkaSource
-> a1.sources.kafka-source-1.zookeeperConnect = 192.168.1.101:2181
-> a1.sources.kafka-source-1.topic = test
-> a1.sources.kafka-source-1.groupId = flume
-> a1.sources.kafka-source-1.batchSize = 100
-> a1.sources.kafka-source-1.channels = hdfs-channel-1
-> a1.sources.source1.kafka.consumer.timeout.ms = 90000
-> 
-> a1.channels.hdfs-channel-1.type = memory
-> 
-> a1.sinks.hdfs-sink-1.channel = hdfs-channel-1
-> a1.sinks.hdfs-sink-1.type = hdfs
-> a1.sinks.hdfs-sink-1.hdfs.writeFormat = Text
-> a1.sinks.hdfs-sink-1.hdfs.fileType = DataStream
-> a1.sinks.hdfs-sink-1.hdfs.filePrefix = test-events
-> a1.sinks.hdfs-sink-1.hdfs.useLocalTimeStamp = true
-> a1.sinks.hdfs-sink-1.hdfs.path = /tmp/kafka/%{topic}/%y-%m-%d
-> a1.sinks.hdfs-sink-1.hdfs.rollCount = 10
-> a1.sinks.hdfs-sink-1.hdfs.rollSize = 0
-> 
-> a1.channels.hdfs-channel-1.capacity = 10000
-> a1.channels.hdfs-channel-1.transactionCapacity = 1000
+```
+a1.sources = kafka-source-1
+a1.channels = hdfs-channel-1
+a1.sinks = hdfs-sink-1
+
+# For each one of the sources, the type is defined
+a1.sources.kafka-source-1.type = org.apache.flume.source.kafka.KafkaSource
+a1.sources.kafka-source-1.zookeeperConnect = 192.168.1.101:2181
+a1.sources.kafka-source-1.topic = test
+a1.sources.kafka-source-1.groupId = flume
+a1.sources.kafka-source-1.batchSize = 100
+a1.sources.kafka-source-1.channels = hdfs-channel-1
+a1.sources.source1.kafka.consumer.timeout.ms = 90000
+
+a1.channels.hdfs-channel-1.type = memory
+
+a1.sinks.hdfs-sink-1.channel = hdfs-channel-1
+a1.sinks.hdfs-sink-1.type = hdfs
+a1.sinks.hdfs-sink-1.hdfs.writeFormat = Text
+a1.sinks.hdfs-sink-1.hdfs.fileType = DataStream
+a1.sinks.hdfs-sink-1.hdfs.filePrefix = test-events
+a1.sinks.hdfs-sink-1.hdfs.useLocalTimeStamp = true
+a1.sinks.hdfs-sink-1.hdfs.path = /tmp/kafka/%{topic}/%y-%m-%d
+a1.sinks.hdfs-sink-1.hdfs.rollCount = 10
+a1.sinks.hdfs-sink-1.hdfs.rollSize = 0
+
+a1.channels.hdfs-channel-1.capacity = 10000
+a1.channels.hdfs-channel-1.transactionCapacity = 1000
+```
 
 Start flume agent as follows:
 ```
