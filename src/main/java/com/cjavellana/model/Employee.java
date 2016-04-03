@@ -60,7 +60,7 @@ public class Employee implements Serializable {
     }
 
     public String toCSV() {
-        return String.format("%s,%s,%s,%s",
+        return String.format("\"%s\",\"%s\",\"%s\",\"%s\"\n",
                 (userid == null) ? "" : userid,
                 (name == null) ? "" : name,
                 (lastName == null) ? "" : lastName,

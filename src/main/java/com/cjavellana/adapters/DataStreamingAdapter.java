@@ -48,7 +48,7 @@ public class DataStreamingAdapter {
                 executorService.submit(() -> {
                     try {
                         Employee e = queue.take();
-                        csvBuffer.append(e.toCSV()).append("\n");
+                        csvBuffer.append(e.toCSV());
 
                     } catch (InterruptedException ie) {
                         LOGGER.warn("Unable to convert to CSV", ie);
@@ -56,11 +56,12 @@ public class DataStreamingAdapter {
                 });
             }
 
-            //exchange.getIn().setBody(csvBuffer.toString(), String.class);
-            //kafkaProducer.send(exchange);
-
             LOGGER.info("Sending {} to {} Topic", csvBuffer.toString(), availableEntity.getTable());
-            kafkaProducer.sendBody("direct:kafka" + availableEntity.getTable() + "Route", csvBuffer.toString());
+
+            exchange.getIn().setBody(csvBuffer.toString(), String.class);
+            kafkaProducer.send(exchange);
+
+            //kafkaProducer.sendBody("direct:kafka" + availableEntity.getTable() + "Route", csvBuffer.toString());
 
             pageNo++;
             p = new PageRequest(pageNo, Constants.PAGE_SIZE);
