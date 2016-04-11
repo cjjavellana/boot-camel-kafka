@@ -84,3 +84,70 @@ Gotchas
 TODO
 ----
 1. Dockerize this project
+
+Ignite Client
+-------------
+```scala
+import java.util
+import java.util.Calendar
+
+import com.cjavellana.beans.SimpleObject
+import net.spy.memcached.{AddrUtil, BinaryConnectionFactory, MemcachedClient}
+import org.apache.ignite.Ignition
+import org.apache.ignite.cache.CacheMode
+import org.apache.ignite.configuration.{CacheConfiguration, IgniteConfiguration}
+import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi
+import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder
+import shade.memcached.{Codec, Configuration, Memcached}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.Future
+import concurrent.duration._
+
+/**
+  * Created by cjavellana on 9/4/16.
+  */
+object IgniteClient {
+
+  def main(args: Array[String]): Unit = {
+
+    println("Using memcached Client...")
+
+    val client = new MemcachedClient(new BinaryConnectionFactory, AddrUtil.getAddresses("192.168.1.101:11211"))
+
+    val birthdateCal = Calendar.getInstance
+    birthdateCal.set(2016, Calendar.JANUARY, 1)
+    val simpleObject = SimpleObject("christian", "Javellana", birthdateCal.getTime)
+
+    client.set("username", 0, "Christian")
+    println("From Memcached Client -> " + client.get("username"))
+
+    println("Connecting to ignite cluster...")
+
+    val ipFinder = new TcpDiscoveryVmIpFinder
+    ipFinder.setAddresses(util.Arrays.asList("192.168.1.101"))
+
+    val spi = new TcpDiscoverySpi
+    spi.setIpFinder(ipFinder)
+
+    val cacheCfg = new CacheConfiguration[String, String]()
+    cacheCfg.setName("partitioned")
+    cacheCfg.setCacheMode(CacheMode.PARTITIONED)
+
+    val cfg = new IgniteConfiguration
+    cfg.setDiscoverySpi(spi)
+    cfg.setCacheConfiguration(cacheCfg)
+
+    Ignition.setClientMode(true)
+    val ignite = Ignition.start(cfg)
+    val cache = ignite.getOrCreateCache[String, SimpleObject]("partitioned")
+
+    val user = SimpleObject("christian", "javellana", birthdateCal.getTime)
+
+    cache.put("Message", user)
+    println("From Ignite: " + cache.get("Message"))
+  }
+
+}
+```
